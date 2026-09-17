@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / VS Code
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
+# OS
+.DS_Store
+
+# Interviewer answer key — keep private.
+# Remove this line if you intend to publish the solution.
+SOLUTION.md
