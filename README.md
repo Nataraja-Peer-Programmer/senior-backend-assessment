@@ -75,6 +75,26 @@ curl http://localhost:8080/api/products
 }
 ```
 
+## Your task
+
+The scaffolding is in place, but two service methods are **not implemented yet**.
+Your job during the session:
+
+1. **Implement `POST /api/products`** — add a product to the repository.
+   (Complete `ProductService.addProduct(...)`.)
+2. **Implement `GET /api/products`** — return all products **grouped by category**,
+   e.g. `{ "ELECTRONICS": [...], "BOOKS": [...] }`.
+   (Complete `ProductService.getProductsGroupedByCategory()`.)
+3. **Write unit tests** for both. Start in `ProductServiceTest`; there is an
+   optional `ProductControllerTest` (MockMvc) stub for web-layer tests if you
+   have time.
+
+The controller, repository, DTO, validation, and error handling are already
+wired up — you only need to fill in the two `ProductService` methods (look for
+the `TODO` / `UnsupportedOperationException`) and add tests.
+
+Run `./gradlew test` as you go.
+
 ## Project layout
 
 ```
@@ -82,11 +102,9 @@ src/main/java/com/example/assessment
 ├── AssessmentApplication.java          # Spring Boot entry point
 └── product
     ├── Product.java                    # domain model (id, name, category, price)
-    ├── ProductRepository.java          # in-memory store
-    ├── ProductService.java             # business logic (add, group by category)
-    ├── ProductController.java          # REST endpoints
+    ├── ProductRepository.java          # in-memory store (findAll, save)
+    ├── ProductService.java             # business logic  <-- IMPLEMENT THE TODOs HERE
+    ├── ProductController.java          # REST endpoints (already wired)
     ├── GlobalExceptionHandler.java     # validation -> 400
     └── dto/CreateProductRequest.java   # validated request payload
 ```
-
-The interviewer will guide you through the exercise during the session.

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -17,23 +16,25 @@ public class ProductService {
     }
 
     /**
-     * Adds a new product to the repository.
+     * TODO: Add a new product to the repository.
+     *
+     * Build a {@link Product} from the incoming request and persist it via
+     * {@link ProductRepository#save(Product)} (which assigns the id).
+     * Return the saved product.
      */
     public Product addProduct(CreateProductRequest request) {
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setCategory(request.getCategory());
-        product.setPrice(request.getPrice());
-        return repository.save(product);
+        throw new UnsupportedOperationException("TODO: implement addProduct");
     }
 
     /**
-     * Returns all products grouped by their category.
+     * TODO: Return all products grouped by their category.
      *
-     * Example: { "ELECTRONICS": [laptop, phone], "BOOKS": [novel] }
+     * Example result:
+     *   { "ELECTRONICS": [laptop, phone], "BOOKS": [novel] }
+     *
+     * Hint: read all products from the repository and group them by category.
      */
     public Map<String, List<Product>> getProductsGroupedByCategory() {
-        return repository.findAll().stream()
-                .collect(Collectors.groupingBy(Product::getCategory));
+        throw new UnsupportedOperationException("TODO: implement getProductsGroupedByCategory");
     }
 }

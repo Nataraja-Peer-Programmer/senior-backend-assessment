@@ -23,3 +23,6 @@ bin/
 # Remove these lines if you intend to publish them.
 SOLUTION.md
 INTERVIEW_30MIN.md
+
+# Full reference solution — kept locally, never pushed.
+.solution/
