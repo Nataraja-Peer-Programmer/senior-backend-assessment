@@ -1,88 +1,78 @@
-# Live Coding — Interviewer Script
+# Live Coding — Interviewer Script (Product API)
 
-> Interviewer-facing. Do not share this file with the candidate.
-> Answer key and scoring rubric are in `SOLUTION.md`.
+> Interviewer-facing outline. The condensed 30-minute plan is in
+> `INTERVIEW_30MIN.md`; the reference solution + rubric in `SOLUTION.md`.
+> Both of those are git-ignored and private.
 
-**Format:** ~45–60 min live pairing. Candidate shares screen, drives in IntelliJ.
-**Warm-up (5 min):** have them clone, run `./gradlew test`, and skim the code.
-Ask them to briefly describe the architecture back to you (layering, where logic lives).
+**Exercise:** implement a small Product API.
 
-Move through the tasks in order. Each task escalates. It's fine to stop early —
-the goal is signal on how a senior thinks, not completing every task.
+1. **POST `/api/products`** — add a product (name, category, price).
+2. **GET `/api/products`** — return all products **grouped by category**.
+3. **Unit test** both.
+
+**Format:** ~30 min live pairing. Candidate shares screen, drives in IntelliJ.
+Hand them the stubbed version so they build it live (see `INTERVIEW_30MIN.md`
+for how to prepare the skeleton).
 
 ---
 
-## Task 1 — Add an endpoint (warm-up, ~8 min)
+## Warm-up (~3 min)
 
-> "Add an endpoint to update a task's status, e.g. `PATCH /api/tasks/{id}/status`
-> with a body like `{ "status": "IN_PROGRESS" }`."
+Have them run `./gradlew test` and skim the code.
+
+> "Where would product endpoints go, and where does the business logic belong?"
+
+Look for: controller → service → repository layering; notices the repository
+already offers `findAll()` and `save()`.
+
+---
+
+## Task 1 — POST a product (~8 min)
+
+> "Implement `POST /api/products`. A product has a name, category, and price."
 
 **What to look for**
-- Adds a DTO and validates the incoming status.
-- Wires controller → service → repository cleanly (doesn't dump logic in the controller).
-- Returns the updated task; 404 when the id doesn't exist (reuses `TaskNotFoundException`).
+- A validated request DTO (`@Valid`, `@NotBlank`, non-negative price).
+- Thin controller; create logic in the service.
+- Returns 201 with the created product (generated id included).
 
 **Probes**
-- What HTTP status for a successful update? Why PATCH vs PUT?
-- What happens with an invalid/unknown status value?
+- Blank name or negative price -> 400?
+- Why a DTO instead of binding the entity directly?
 
 ---
 
-## Task 2 — Validation & error handling (~8 min)
+## Task 2 — GET grouped by category (~11 min, core)
 
-> "A blank title should be rejected with a 400. Confirm it is, and extend
-> validation: titles must be unique (case-insensitive). A duplicate should
-> return 409 Conflict."
+> "Implement `GET /api/products` to return products grouped by category, e.g.
+> `{ "ELECTRONICS": [...], "BOOKS": [...] }`."
 
 **What to look for**
-- Finds the existing `@Valid` + `GlobalExceptionHandler` wiring.
-- Introduces a new exception + handler returning 409 (not a raw 500).
-- Considers case-insensitive comparison and where the check belongs (service).
+- Idiomatic `Collectors.groupingBy(Product::getCategory)`.
+- Returns `Map<String, List<Product>>`.
+- Sensible on the empty case.
 
 **Probes**
-- Where should the uniqueness check live, and why not the controller?
-- Race condition: two concurrent creates with the same title — how would you handle it?
+- Two products, same category?
+- Null category — what happens with `groupingBy`? (NPE — guarded by `@NotBlank`.)
+- Make grouping case-insensitive?
 
 ---
 
-## Task 3 — Find and fix a bug (~10 min)
+## Task 3 — Unit tests (~6 min)
 
-> "There's a method `TaskService.getTasksByStatus(TaskStatus)`. A colleague says
-> filtering by status returns the wrong tasks. Reproduce it with a test, then fix it."
+> "Add unit tests for add-product and the grouping."
 
 **What to look for**
-- Writes a failing test first (red), then fixes (green) — TDD instinct.
-- Spots that the filter uses `!=` instead of `==` / `.equals`.
-- Comments on enum comparison (`==` is fine for enums; `.equals` also fine).
-
-See `SOLUTION.md` for the exact defect and fix.
+- Plain JUnit service test with the real in-memory repo, and/or a `MockMvc` web test.
+- Meaningful assertions (keys, per-category membership, empty case).
+- Test isolation: resets the shared singleton repository between tests.
 
 ---
 
-## Task 4 — Write a test (~8 min)
+## Stretch / discussion (if time)
 
-> "Add a web-layer test proving that creating a task with a title longer than
-> 120 characters returns 400."
-
-**What to look for**
-- Uses `MockMvc` (pattern already in `TaskControllerTest`).
-- Understands the difference between unit tests (`TaskServiceTest`) and
-  slice/integration tests.
-- Asserts on status code and ideally the error body.
-
----
-
-## Task 5 — Design discussion / stretch (remaining time)
-
-Pick based on the candidate's strengths. Discussion, not necessarily code:
-
-- **Persistence:** swap the in-memory store for JPA/Postgres. What changes? Migrations?
-- **Pagination:** `GET /api/tasks` returns everything — design pagination + filtering.
-- **Concurrency:** the repository is a `ConcurrentHashMap`. Where are the remaining
-  race conditions (e.g. check-then-act in uniqueness)? How to make it safe?
-- **Caching:** where would you add caching and how would you invalidate it?
-- **Observability:** how would you add metrics/tracing/structured logging?
-
-**What to look for**
-- Reasons about trade-offs, not just names of technologies.
-- Talks about failure modes, idempotency, and testing strategy.
+- `GET /api/products/{category}` for a single category.
+- Case-insensitive categories.
+- Swapping the in-memory store for a database — what changes, what to test.
+- Concurrency: the repository is a `ConcurrentHashMap`; where are the remaining races?

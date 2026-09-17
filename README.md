@@ -2,7 +2,7 @@
 
 A small Spring Boot service used for a **live coding interview** for senior backend engineers.
 
-It is a minimal in-memory **Task API**. There is no database and no external
+It is a minimal in-memory **Product API**. There is no database and no external
 setup — clone, open in IntelliJ, and run.
 
 ## Tech stack
@@ -45,35 +45,48 @@ The API starts on `http://localhost:8080`.
 
 ## API
 
-| Method | Path              | Description                 |
-|--------|-------------------|-----------------------------|
-| GET    | `/api/tasks`      | List all tasks              |
-| GET    | `/api/tasks/{id}` | Get a single task           |
-| POST   | `/api/tasks`      | Create a task               |
-| DELETE | `/api/tasks/{id}` | Delete a task               |
+| Method | Path            | Description                          |
+|--------|-----------------|--------------------------------------|
+| GET    | `/api/products` | List products **grouped by category**|
+| POST   | `/api/products` | Add a product                        |
 
-Create a task:
+Add a product:
 
 ```bash
-curl -X POST http://localhost:8080/api/tasks \
+curl -X POST http://localhost:8080/api/products \
   -H "Content-Type: application/json" \
-  -d '{"title":"Write tests","description":"cover the service layer"}'
+  -d '{"name":"Laptop","category":"ELECTRONICS","price":999.99}'
+```
+
+Get products grouped by category:
+
+```bash
+curl http://localhost:8080/api/products
+```
+
+```json
+{
+  "ELECTRONICS": [
+    { "id": 1, "name": "Laptop", "category": "ELECTRONICS", "price": 999.99 }
+  ],
+  "BOOKS": [
+    { "id": 2, "name": "Novel", "category": "BOOKS", "price": 12.50 }
+  ]
+}
 ```
 
 ## Project layout
 
 ```
 src/main/java/com/example/assessment
-├── AssessmentApplication.java      # Spring Boot entry point
-└── task
-    ├── Task.java                   # domain model
-    ├── TaskStatus.java             # TODO / IN_PROGRESS / DONE
-    ├── TaskRepository.java         # in-memory store
-    ├── TaskService.java            # business logic
-    ├── TaskController.java         # REST endpoints
-    ├── TaskNotFoundException.java
-    ├── GlobalExceptionHandler.java
-    └── dto/CreateTaskRequest.java  # validated request payload
+├── AssessmentApplication.java          # Spring Boot entry point
+└── product
+    ├── Product.java                    # domain model (id, name, category, price)
+    ├── ProductRepository.java          # in-memory store
+    ├── ProductService.java             # business logic (add, group by category)
+    ├── ProductController.java          # REST endpoints
+    ├── GlobalExceptionHandler.java     # validation -> 400
+    └── dto/CreateProductRequest.java   # validated request payload
 ```
 
-The interviewer will guide you through a series of tasks during the session.
+The interviewer will guide you through the exercise during the session.
