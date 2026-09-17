@@ -19,6 +19,7 @@ bin/
 # OS
 .DS_Store
 
-# Interviewer answer key — keep private.
-# Remove this line if you intend to publish the solution.
+# Interviewer materials — keep private (contain the answer key).
+# Remove these lines if you intend to publish them.
 SOLUTION.md
+INTERVIEW_30MIN.md
