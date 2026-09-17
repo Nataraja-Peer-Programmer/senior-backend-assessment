@@ -12,6 +12,14 @@ setup — clone, open in IntelliJ, and run.
 - Gradle (via the Gradle Wrapper — no local Gradle install needed)
 - JUnit 5 + Spring Boot Test + MockMvc
 
+## Requirements
+
+- **Git** and an internet connection.
+- **A JDK is not required up front.** The build targets Java 17 via a Gradle
+  toolchain. If you already have JDK 17 installed, Gradle uses it. If not,
+  Gradle automatically downloads a JDK 17 (via foojay.io) into `~/.gradle/jdks`
+  on the first build — nothing to install manually.
+
 ## Getting started
 
 Build and run the tests:
@@ -19,6 +27,9 @@ Build and run the tests:
 ```bash
 ./gradlew test
 ```
+
+> First run downloads Gradle and, if needed, a JDK 17. This is a one-time
+> download and is cached for later runs.
 
 Run the application:
 

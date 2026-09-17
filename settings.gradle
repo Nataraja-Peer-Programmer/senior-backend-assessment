@@ -1,1 +1,7 @@
+plugins {
+    // Lets Gradle auto-download a matching JDK (via foojay.io) when the
+    // required toolchain version isn't already installed on the machine.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
 rootProject.name = 'senior-backend-assessment'
