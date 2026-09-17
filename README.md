@@ -14,11 +14,15 @@ setup — clone, open in IntelliJ, and run.
 
 ## Requirements
 
-- **Git** and an internet connection.
-- **A JDK is not required up front.** The build targets Java 17 via a Gradle
-  toolchain. If you already have JDK 17 installed, Gradle uses it. If not,
-  Gradle automatically downloads a JDK 17 (via foojay.io) into `~/.gradle/jdks`
-  on the first build — nothing to install manually.
+- **Git**
+- **JDK 17** installed and available on your machine (verify with `java -version`).
+
+  Gradle itself does not need to be installed — the project ships the Gradle
+  Wrapper (`./gradlew`).
+
+  > If you don't have JDK 17, Gradle will attempt to download one automatically
+  > (via foojay.io) on the first build. This may not work on restricted/corporate
+  > networks, so please install JDK 17 beforehand.
 
 ## Getting started
 
