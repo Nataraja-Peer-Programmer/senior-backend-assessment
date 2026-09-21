@@ -84,10 +84,12 @@ implemented yet**. Your job during the session:
    have no request mappings yet — add the Spring Web annotations so that:
    - `GET  /api/products`  returns products grouped by category.
    - `POST /api/products`  adds a product, returns 201, and validates the body.
-2. **Implement `ProductService.addProduct(...)`** — add a product to the repository.
-3. **Implement `ProductService.getProductsGroupedByCategory()`** — return all
-   products **grouped by category**, e.g. `{ "ELECTRONICS": [...], "BOOKS": [...] }`.
-4. **Write unit tests** for the service. Start in `ProductServiceTest`; there is
+2. **Wire up `ProductService`** as a Spring bean and implement its logic:
+   - Register the class so it can be injected into the controller.
+   - `addProduct(...)` — add a product to the repository.
+   - `getProductsGroupedByCategory()` — return all products **grouped by
+     category**, e.g. `{ "ELECTRONICS": [...], "BOOKS": [...] }`.
+3. **Write unit tests** for the service. Start in `ProductServiceTest`; there is
    an optional `ProductControllerTest` (MockMvc) stub for web-layer tests if you
    have time.
 

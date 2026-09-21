@@ -1,12 +1,16 @@
 package com.example.assessment.product;
 
 import com.example.assessment.product.dto.CreateProductRequest;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
+/**
+ * Business logic for products.
+ *
+ * TODO (candidate): register this class as a Spring service bean so it can be
+ * injected into the controller, then implement the two methods below.
+ */
 public class ProductService {
 
     private final ProductRepository repository;
