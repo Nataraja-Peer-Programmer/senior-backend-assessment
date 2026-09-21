@@ -45,6 +45,9 @@ The API starts on `http://localhost:8080`.
 
 ## API
 
+This is the target API you will implement during the session (see **Your task**
+below). It is the spec, not yet working code.
+
 | Method | Path            | Description                          |
 |--------|-----------------|--------------------------------------|
 | GET    | `/api/products` | List products **grouped by category**|
@@ -107,7 +110,7 @@ src/main/java/com/example/assessment
     ├── Product.java                    # domain model (id, name, category, price)
     ├── ProductRepository.java          # in-memory store (findAll, save)
     ├── ProductService.java             # business logic  <-- IMPLEMENT THE TODOs HERE
-    ├── ProductController.java          # REST endpoints (already wired)
+    ├── ProductController.java          # REST endpoints   <-- ADD THE ANNOTATIONS HERE
     ├── GlobalExceptionHandler.java     # validation -> 400
     └── dto/CreateProductRequest.java   # validated request payload
 ```
