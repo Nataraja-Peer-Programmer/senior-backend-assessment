@@ -77,21 +77,22 @@ curl http://localhost:8080/api/products
 
 ## Your task
 
-The scaffolding is in place, but two service methods are **not implemented yet**.
-Your job during the session:
+The scaffolding is in place, but the endpoints and business logic are **not
+implemented yet**. Your job during the session:
 
-1. **Implement `POST /api/products`** — add a product to the repository.
-   (Complete `ProductService.addProduct(...)`.)
-2. **Implement `GET /api/products`** — return all products **grouped by category**,
-   e.g. `{ "ELECTRONICS": [...], "BOOKS": [...] }`.
-   (Complete `ProductService.getProductsGroupedByCategory()`.)
-3. **Write unit tests** for both. Start in `ProductServiceTest`; there is an
-   optional `ProductControllerTest` (MockMvc) stub for web-layer tests if you
+1. **Wire up the REST controller** (`ProductController`). The methods exist but
+   have no request mappings yet — add the Spring Web annotations so that:
+   - `GET  /api/products`  returns products grouped by category.
+   - `POST /api/products`  adds a product, returns 201, and validates the body.
+2. **Implement `ProductService.addProduct(...)`** — add a product to the repository.
+3. **Implement `ProductService.getProductsGroupedByCategory()`** — return all
+   products **grouped by category**, e.g. `{ "ELECTRONICS": [...], "BOOKS": [...] }`.
+4. **Write unit tests** for the service. Start in `ProductServiceTest`; there is
+   an optional `ProductControllerTest` (MockMvc) stub for web-layer tests if you
    have time.
 
-The controller, repository, DTO, validation, and error handling are already
-wired up — you only need to fill in the two `ProductService` methods (look for
-the `TODO` / `UnsupportedOperationException`) and add tests.
+The repository, request DTO, validation, and error handling are already provided.
+Look for the `TODO` markers in `ProductController` and `ProductService`.
 
 Run `./gradlew test` as you go.
 

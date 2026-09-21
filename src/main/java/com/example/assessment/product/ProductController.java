@@ -1,20 +1,24 @@
 package com.example.assessment.product;
 
 import com.example.assessment.product.dto.CreateProductRequest;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/products")
+/**
+ * REST controller for products.
+ *
+ * TODO (candidate): turn this into a working REST controller.
+ *
+ *   1. Register this class as a REST controller and map it to the base path
+ *      "/api/products".
+ *   2. Expose GET  /api/products  -> getProductsGroupedByCategory()
+ *   3. Expose POST /api/products  -> addProduct(...), returning 201 Created,
+ *      with request-body binding and validation on the incoming payload.
+ *
+ * The method bodies below are already correct — you only need to add the
+ * appropriate Spring Web annotations so these endpoints are exposed.
+ */
 public class ProductController {
 
     private final ProductService service;
@@ -25,18 +29,17 @@ public class ProductController {
 
     /**
      * Returns all products grouped by category.
+     * TODO: expose as GET /api/products
      */
-    @GetMapping
     public Map<String, List<Product>> getProductsGroupedByCategory() {
         return service.getProductsGroupedByCategory();
     }
 
     /**
      * Adds a new product.
+     * TODO: expose as POST /api/products (return 201, validate the request body)
      */
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Product addProduct(@Valid @RequestBody CreateProductRequest request) {
+    public Product addProduct(CreateProductRequest request) {
         return service.addProduct(request);
     }
 }
