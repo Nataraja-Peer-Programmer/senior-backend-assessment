@@ -15,14 +15,24 @@ setup — clone, open in IntelliJ, and run.
 ## Requirements
 
 - **Git**
-- **JDK 17** installed and available on your machine (verify with `java -version`).
+- **JDK 17 or newer** installed and available on your machine
+  (verify with `java -version` — 17, 21, etc. all work).
 
   Gradle itself does not need to be installed — the project ships the Gradle
-  Wrapper (`./gradlew`).
+  Wrapper (`./gradlew`), which downloads the right Gradle version automatically.
 
-  > If you don't have JDK 17, Gradle will attempt to download one automatically
-  > (via foojay.io) on the first build. This may not work on restricted/corporate
-  > networks, so please install JDK 17 beforehand.
+## Verify your setup before the interview
+
+From the project folder, run:
+
+```bash
+./gradlew test
+```
+
+You should see `BUILD SUCCESSFUL`. This also downloads all dependencies so your
+IDE can resolve the Spring libraries. In IntelliJ, open the project (File →
+Open → select this folder) and let the Gradle import finish; if imports show as
+unresolved, click the Gradle panel's refresh/reload button.
 
 ## Getting started
 

@@ -8,12 +8,11 @@ group = 'com.example.assessment'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    // Require JDK 17. Gradle uses a locally installed JDK 17 if present;
-    // otherwise the foojay resolver (configured in settings.gradle) downloads
-    // one automatically into ~/.gradle/jdks. Candidates need only Git.
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    // Target Java 17 bytecode, but compile with ANY installed JDK 17 or newer
+    // (e.g. 17 or 21). This avoids hard-failing on candidate machines that have
+    // a newer JDK but not exactly 17, and does not depend on downloading a JDK.
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
