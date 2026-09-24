@@ -63,30 +63,78 @@ below). It is the spec, not yet working code.
 | GET    | `/api/products` | List products **grouped by category**|
 | POST   | `/api/products` | Add a product                        |
 
-Add a product:
+A product has: `id` (server-generated), `name`, `category`, `price`.
+
+### POST `/api/products` — add a product
+
+**Request**
 
 ```bash
-curl -X POST http://localhost:8080/api/products \
+curl -i -X POST http://localhost:8080/api/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop","category":"ELECTRONICS","price":999.99}'
 ```
 
-Get products grouped by category:
+Request body:
+
+```json
+{
+  "name": "Laptop",
+  "category": "ELECTRONICS",
+  "price": 999.99
+}
+```
+
+**Response — `201 Created`** (the `id` is assigned by the server):
+
+```json
+{
+  "id": 1,
+  "name": "Laptop",
+  "category": "ELECTRONICS",
+  "price": 999.99
+}
+```
+
+**Validation error — `400 Bad Request`** (e.g. blank `name` or negative `price`):
 
 ```bash
-curl http://localhost:8080/api/products
+curl -i -X POST http://localhost:8080/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"","category":"ELECTRONICS","price":999.99}'
 ```
 
 ```json
 {
+  "status": 400,
+  "detail": "name: name must not be blank"
+}
+```
+
+### GET `/api/products` — list products grouped by category
+
+**Request**
+
+```bash
+curl -i http://localhost:8080/api/products
+```
+
+**Response — `200 OK`** — a JSON object keyed by category, each value a list of
+products in that category:
+
+```json
+{
   "ELECTRONICS": [
-    { "id": 1, "name": "Laptop", "category": "ELECTRONICS", "price": 999.99 }
+    { "id": 1, "name": "Laptop", "category": "ELECTRONICS", "price": 999.99 },
+    { "id": 2, "name": "Phone",  "category": "ELECTRONICS", "price": 499.00 }
   ],
   "BOOKS": [
-    { "id": 2, "name": "Novel", "category": "BOOKS", "price": 12.50 }
+    { "id": 3, "name": "Novel", "category": "BOOKS", "price": 12.50 }
   ]
 }
 ```
+
+When there are no products, the response is an empty object `{}`.
 
 ## Your task
 
