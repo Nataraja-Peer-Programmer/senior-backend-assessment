@@ -23,7 +23,12 @@ public class ProductService {
      * TODO: Add a new product to the repository.
      *
      * Build a {@link Product} from the incoming request and persist it via
-     * {@link ProductRepository#save(Product)} (which assigns the id).
+     * {@link ProductRepository#save(Product)}.
+     *
+     * The request carries the client-supplied {@code id} (the primary key) — copy
+     * it onto the product. If that id is a duplicate the repository rejects it
+     * (see the repository TODO), which should surface to the client as 409 Conflict.
+     *
      * Return the saved product.
      */
     public Product addProduct(CreateProductRequest request) {

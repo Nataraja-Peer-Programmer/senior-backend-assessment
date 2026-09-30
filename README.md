@@ -7,6 +7,22 @@ It is a minimal in-memory **Product API** — no database, no external setup.
 The scaffolding is provided; during the session you implement the two endpoints,
 their business logic, and unit tests.
 
+## API reference
+
+- **Swagger UI (opens in the browser, no setup):**
+  **[View the API in Swagger UI](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/Nataraja-Peer-Programmer/senior-backend-assessment/main/openapi.yml)**
+  — renders [`openapi.yml`](openapi.yml) via the hosted Swagger viewer. Just click
+  it. (Requires this repo's `openapi.yml` to be pushed to `main` and internet
+  access.)
+- **Swagger UI (live, from the running app):** with the app running
+  (`./gradlew bootRun`), open
+  [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+  for interactive docs generated from the code. Spec at
+  [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs).
+- **Offline (no app, no internet):** open [`api-docs.html`](api-docs.html) — the
+  spec is embedded, so it renders from disk.
+- **Raw contract:** [`openapi.yml`](openapi.yml) (OpenAPI 3.0).
+
 ## Tech stack
 
 - Java 17
@@ -62,21 +78,34 @@ The endpoints and business logic are **not implemented yet**. Look for the
    - `addProduct(...)` — add a product to the repository.
    - `getProductsGroupedByCategory()` — return all products **grouped by
      category**.
-3. **Write unit tests** for the service. Start in `ProductServiceTest`; there is
-   an optional `ProductControllerTest` (MockMvc) stub for web-layer tests if you
-   have time.
+3. **Treat the product `id` as a client-supplied primary key.** The `id` is
+   **required** on the request and provided by the client — the repository does
+   **not** generate it. It must be **unique**: a `POST` whose `id` already exists
+   must be rejected as a conflict — return **409 Conflict** (do not overwrite the
+   existing product, and do not 500). A request with no `id` is invalid → **400**.
+   Enforce the uniqueness in the repository and map the resulting exception to
+   409. Follow the `TODO` markers in `ProductRepository`,
+   `DuplicateProductException`, and `GlobalExceptionHandler`.
+4. **Write unit tests** for the service — including the duplicate-id case. Start
+   in `ProductServiceTest`; there is an optional `ProductControllerTest` (MockMvc)
+   stub for web-layer tests if you have time.
 
-Already provided (you do **not** build these): the `Product` model,
-`ProductRepository` (`findAll` / `save`), the `CreateProductRequest` DTO with
-validation, and `GlobalExceptionHandler` (turns validation errors into 400).
+Already provided (you do **not** build these): the `Product` model, the
+`ProductRepository` skeleton (`findAll` / `save` / `clear`), the
+`CreateProductRequest` DTO with validation, `DuplicateProductException` (a ready
+exception type to throw), and `GlobalExceptionHandler` (turns validation errors
+into 400 — you extend it for 409).
 
 Run `./gradlew test` as you go.
 
 ### Definition of done
 
-- `POST /api/products` with a valid body returns **201** with the created
-  product (including a server-generated `id`).
-- `POST` with an invalid body (blank name, negative price) returns **400**.
+- `POST /api/products` with a valid body (including a client-supplied `id`)
+  returns **201** with the created product, echoing that `id`.
+- `POST` with an `id` that already exists returns **409 Conflict**, and the
+  existing product is left unchanged.
+- `POST` with an invalid body (missing `id`, blank name, negative price) returns
+  **400**.
 - `GET /api/products` returns **200** with products grouped by category.
 - Your unit tests pass (`./gradlew test` is green).
 
@@ -84,8 +113,8 @@ Run `./gradlew test` as you go.
 
 ## API specification
 
-The endpoints below are what you implement. A product has: `id`
-(server-generated), `name`, `category`, `price`.
+The endpoints below are what you implement. A product has: `id` (the
+client-supplied primary key), `name`, `category`, `price`.
 
 | Method | Path            | Description                           |
 |--------|-----------------|---------------------------------------|
@@ -94,25 +123,15 @@ The endpoints below are what you implement. A product has: `id`
 
 ### POST `/api/products` — add a product
 
-Request:
+The client supplies the `id`; it is the primary key and must be unique.
 
 ```bash
 curl -i -X POST http://localhost:8080/api/products \
   -H "Content-Type: application/json" \
-  -d '{"name":"Laptop","category":"ELECTRONICS","price":999.99}'
+  -d '{"id":1,"name":"Laptop","category":"ELECTRONICS","price":999.99}'
 ```
 
 Request body:
-
-```json
-{
-  "name": "Laptop",
-  "category": "ELECTRONICS",
-  "price": 999.99
-}
-```
-
-Response — **`201 Created`** (the `id` is assigned by the server):
 
 ```json
 {
@@ -123,12 +142,34 @@ Response — **`201 Created`** (the `id` is assigned by the server):
 }
 ```
 
-Validation error — **`400 Bad Request`** (e.g. blank `name` or negative `price`):
+Response — **`201 Created`** (the product is echoed back with its `id`):
+
+```json
+{
+  "id": 1,
+  "name": "Laptop",
+  "category": "ELECTRONICS",
+  "price": 999.99
+}
+```
+
+Duplicate `id` — **`409 Conflict`** (posting the same `id` twice; the first
+product is kept, the second is rejected):
+
+```json
+{
+  "status": 409,
+  "detail": "Product with id 1 already exists"
+}
+```
+
+Validation error — **`400 Bad Request`** (missing `id`, blank `name`, or negative
+`price`):
 
 ```bash
 curl -i -X POST http://localhost:8080/api/products \
   -H "Content-Type: application/json" \
-  -d '{"name":"","category":"ELECTRONICS","price":999.99}'
+  -d '{"id":1,"name":"","category":"ELECTRONICS","price":999.99}'
 ```
 
 ```json
@@ -172,9 +213,10 @@ src/main/java/com/example/assessment
 ├── AssessmentApplication.java          # Spring Boot entry point
 └── product
     ├── Product.java                    # domain model (id, name, category, price)
-    ├── ProductRepository.java          # in-memory store (findAll, save)
-    ├── ProductService.java             # business logic   <-- IMPLEMENT THE TODOs HERE
-    ├── ProductController.java          # REST endpoints    <-- ADD THE ANNOTATIONS HERE
-    ├── GlobalExceptionHandler.java     # validation -> 400
-    └── dto/CreateProductRequest.java   # validated request payload
+    ├── ProductRepository.java          # in-memory store   <-- ENFORCE UNIQUE id HERE (TODO)
+    ├── ProductService.java             # business logic    <-- IMPLEMENT THE TODOs HERE
+    ├── ProductController.java          # REST endpoints     <-- ADD THE ANNOTATIONS HERE
+    ├── DuplicateProductException.java  # thrown on duplicate id (use it; map to 409)
+    ├── GlobalExceptionHandler.java     # validation -> 400  <-- ADD 409 MAPPING HERE (TODO)
+    └── dto/CreateProductRequest.java   # validated request payload (optional id)
 ```

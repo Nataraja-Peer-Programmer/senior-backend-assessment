@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * TODO (candidate, if time): use MockMvc to test the HTTP layer, e.g.
  *   - POST /api/products returns 201 with the created product.
  *   - POST with an invalid body returns 400.
+ *   - POST twice with the same id returns 409 Conflict.
  *   - GET /api/products returns products grouped by category.
  *
  * Note: the repository is a Spring singleton shared across test methods, so you
